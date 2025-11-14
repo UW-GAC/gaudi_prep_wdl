@@ -1,0 +1,14 @@
+{
+    "gaudi_prep.vcf_files": [
+
+    ], 
+    "gaudi_prep.samples_keep": "", 
+    "gaudi_prep.ref_file_list": [
+
+    ], 
+    "gaudi_prep.out_prefix_list": [
+
+    ], 
+    "gaudi_prep.genetic_map_file": "", 
+    "gaudi_prep.reference_map_file": ""
+}

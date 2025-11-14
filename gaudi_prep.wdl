@@ -3,7 +3,7 @@ version 1.0
 import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/vcf_to_plink2.wdl" as vcf_to_plink2
 import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/convert_lanc.wdl" as convert_lanc
 import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/make_fbm.wdl" as make_fbm
-import "run_flare.wdl" as run_flare
+import "https://raw.githubusercontent.com/bdchen/FLARE_workflow/refs/heads/main/FLARE.wdl" as run_flare
 
 workflow gaudi_prep {
     input {
