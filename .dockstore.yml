@@ -1,0 +1,8 @@
+version 1.0 
+
+workflows: 
+  - name: gaudi_prep.wdl
+    subclass: WDL
+      primaryDescriptorPath: /gaudi_prep.wdl
+      testParameterFiles:
+          - /gaudi_prep.wdl.json
