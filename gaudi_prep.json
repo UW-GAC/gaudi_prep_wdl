@@ -1,14 +1,54 @@
 {
     "gaudi_prep.vcf_files": [
-
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr1.dose.vcf.gz",
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr2.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr3.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr4.dose.vcf.gz",
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr5.dose.vcf.gz",
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr6.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr7.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr8.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr9.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr10.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr11.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr12.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr13.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr14.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr15.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr16.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr17.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr18.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr19.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr20.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr21.dose.vcf.gz", 
+        "gs://fc-secure-270aa33d-c55b-4c04-a772-94f22f183fc5/uploaded_data_dprism/imputation_AFR/chr22.dose.vcf.gz" 
     ], 
-    "gaudi_prep.samples_keep": "", 
+    "gaudi_prep.samples_keep": "gs://fc-secure-4de56560-24ea-449b-8eb2-2d768419d365/GERA.afr.admixture.anc.prop_IDs_21Oct2025_AKM.txt", 
     "gaudi_prep.ref_file_list": [
-
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr1REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr2REF.vcf.gz",
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr3REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr4REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr5REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr6REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr7REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr8REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr9REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr10REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr11REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr12REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr13REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr14REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr15REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr16REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr17REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr18REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr19REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr20REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr21REF.vcf.gz", 
+        "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/chr22REF.vcf.gz" 
     ], 
-    "gaudi_prep.out_prefix_list": [
-
-    ], 
-    "gaudi_prep.genetic_map_file": "", 
-    "gaudi_prep.reference_map_file": ""
+    "gaudi_prep.out_prefix_list": ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22" ], 
+    "gaudi_prep.genetic_map_file": "gs://fc-secure-e74960eb-46cd-4818-8e85-0476b24efe87/plinkhg38map_allchrs.map", 
+    "gaudi_prep.reference_map_file": "gs://fc-secure-4de56560-24ea-449b-8eb2-2d768419d365/1000G_HGDP_reference_K1_K4.pop_21OCT2025_AKM.txt"
 }

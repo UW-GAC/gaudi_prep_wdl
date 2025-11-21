@@ -2,7 +2,6 @@ version 1.0
 
 import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/vcf_to_plink2.wdl" as vcf_to_plink2
 import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/convert_lanc.wdl" as convert_lanc
-import "https://raw.githubusercontent.com/frankp-0/HAUDI_workflow/refs/heads/main/make_fbm.wdl" as make_fbm
 import "https://raw.githubusercontent.com/bdchen/FLARE_workflow/refs/heads/main/FLARE.wdl" as run_flare
 
 workflow gaudi_prep {
@@ -36,7 +35,12 @@ workflow gaudi_prep {
             genetic_map_file = genetic_map_file,
             reference_map_file = reference_map_file, 
             gt_samples = samples_keep
-        # Output fils: log_array, model_array, anc_vcf_array, global_anc_array
+        # Output files: log_array, model_array, anc_vcf_array, global_anc_array
+    }
+
+    call combine_flare {
+        input:
+            flare_files = run_flare.global_anc_array
     }
 
     call convert_lanc.convert_lanc{
@@ -51,9 +55,54 @@ workflow gaudi_prep {
     }
 
     output {
+        File merged_global_ancestry = combine_flare.merged_global_ancestry
+        File global_ancestry_plot = combine_flare.global_ancestry_plot
         Array[File] lanc_files = convert_lanc.lanc_files
         Array[File] pgen = vcf_to_plink2.pgen 
         Array[File] pvar = vcf_to_plink2.pvar
         Array[File] psam = vcf_to_plink2.psam
+    }
+}
+
+
+task combine_flare {
+    input {
+        Array[File] flare_files
+    }
+
+    command <<<
+
+    Rscript -e "\
+    library(tidyverse); \
+    library(RColorBrewer); \
+    flare_files <- c(~{sep=', ' flare_files}); \
+    flare_files <- flare_files[order(as.integer(gsub('[^0-9]', '', flare_files)))]; \
+    chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
+    N <- length(flare_files); chr_sizes <- chr_sizes[1:N, ]; total_size <- sum(chr_sizes$size); chr_weights <- chr_sizes$size/total_size; \
+    combine_chrs <- function(flare_files, chr_weights) { \
+      tmp <- read_tsv(flare_files[1], show_col_types=FALSE); samples <- tmp$SAMPLE; fracs <- tmp[,-1]*chr_weights[1]; \
+      for (i in 2:length(flare_files)) { tmp <- read_tsv(flare_files[i], show_col_types=FALSE); fracs <- fracs + tmp[,-1]*chr_weights[i]; } \
+      fracs <- fracs / rowSums(fracs); flr <- bind_cols(samples=samples, fracs); return(flr) \
+    }; \
+    flr <- combine_chrs(flare_files, chr_weights); \
+    write_tsv(flr, 'global_ancestry.tsv'); \
+    flr_long <- flr %>% mutate(n=row_number()) %>% pivot_longer(-c(samples, n), names_to='Cluster', values_to='Value'); \
+    K <- length(unique(flr_long$Cluster)); \
+    colormap <- colormap <- setNames(c(brewer.pal(8,'Dark2'), brewer.pal(8,'Set2'))[1:K], unique(flr_long$Cluster)); \
+    p <- ggplot(flr_long, aes(x=n, y=Value, fill=Cluster, color=Cluster)) + geom_bar(stat='identity') + scale_fill_manual(values=colormap, breaks=rev(names(colormap))) + scale_color_manual(values=colormap, breaks=rev(names(colormap))) + theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()); \
+    ggsave('global_ancestry.png', p, width=12, height=4); \
+    "
+
+    >>>
+
+    output {
+        File merged_global_ancestry = "global_ancestry.tsv"
+        File global_ancestry_plot = "global_ancestry.png"
+    }
+
+    runtime {
+        docker: "rocker/tidyverse:4.3.1"  # R + tidyverse
+        memory: "8G"
+        cpu: 1
     }
 }
