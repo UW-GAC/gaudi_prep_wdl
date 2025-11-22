@@ -77,11 +77,15 @@ task combine_flare {
     Rscript -e "\
     library(tidyverse); \
     library(RColorBrewer); \
-    flare_files <- readLines('flare_files.txt'); \
-    chr_nums <- as.integer(sub('.*chr([0-9]+)\\.global\\.anc\\.gz$', '\\1', flare_files)); \
-    flare_files <- flare_files[order(chr_nums)]; \
+    # Get chr sizes \
     chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
-    N <- length(flare_files); chr_sizes <- chr_sizes[1:N, ]; total_size <- sum(chr_sizes$size); chr_weights <- chr_sizes$size/total_size; \
+    # Read flare files \
+    flare_files <- readLines('flare_files.txt'); \
+    df <- tibble(flare_files) %>% mutate(chr = str_extract(flare_files, "(chr\\d+)")) %>% inner_join(chr_sizes, by = c("chr" = "chrom")) %>% arrange(chr); \
+    flare_files <- df$flare_files; \
+    N <- length(flare_files); \
+    chr_weights <- df$size / sum(df$size); \
+    # Combine chrs
     combine_chrs <- function(flare_files, chr_weights) { \
       tmp <- read_tsv(flare_files[1], show_col_types=FALSE); \
       samples <- tmp$SAMPLE; \
