@@ -10,8 +10,6 @@ workflow gaudi_prep {
         Array[File] vcf_files # also use as target_file_list in FLARE
         File? samples_keep # also use as gt_samples in FLARE
 
-        # convert lanc input
-
         # FLARE input 
         Array[File] ref_file_list
         Array[String] out_prefix_list
@@ -70,19 +68,27 @@ task combine_flare {
         Array[File] flare_files
     }
 
+    for f in ~{sep=' ' flare_files}; do
+        echo "$f" >> flare_files.txt
+    done
+
     command <<<
 
     Rscript -e "\
     library(tidyverse); \
     library(RColorBrewer); \
-    flare_files <- c("~{sep='\",\"' flare_files}"); \
+    flare_files <- readLines('flare_files.txt'); \
     flare_files <- flare_files[order(as.integer(gsub('[^0-9]', '', flare_files)))]; \
     chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
     N <- length(flare_files); chr_sizes <- chr_sizes[1:N, ]; total_size <- sum(chr_sizes$size); chr_weights <- chr_sizes$size/total_size; \
     combine_chrs <- function(flare_files, chr_weights) { \
-      tmp <- read_tsv(flare_files[1], show_col_types=FALSE); samples <- tmp$SAMPLE; fracs <- tmp[,-1]*chr_weights[1]; \
+      tmp <- read_tsv(flare_files[1], show_col_types=FALSE); \
+      samples <- tmp$SAMPLE; \
+      fracs <- tmp[,-1]*chr_weights[1]; \
       for (i in 2:length(flare_files)) { tmp <- read_tsv(flare_files[i], show_col_types=FALSE); fracs <- fracs + tmp[,-1]*chr_weights[i]; } \
-      fracs <- fracs / rowSums(fracs); flr <- bind_cols(samples=samples, fracs); return(flr) \
+      fracs <- fracs / rowSums(fracs); \
+      flr <- bind_cols(samples=samples, fracs); \
+      return(flr); \
     }; \
     flr <- combine_chrs(flare_files, chr_weights); \
     write_tsv(flr, 'global_ancestry.tsv'); \
