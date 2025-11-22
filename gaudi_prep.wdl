@@ -78,7 +78,8 @@ task combine_flare {
     library(tidyverse); \
     library(RColorBrewer); \
     flare_files <- readLines('flare_files.txt'); \
-    flare_files <- flare_files[order(as.integer(gsub('[^0-9]', '', flare_files)))]; \
+    chr_nums <- as.integer(sub('.*chr([0-9]+)\\.global\\.anc\\.gz$', '\\1', flare_files)); \
+    flare_files <- flare_files[order(chr_nums)]; \
     chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
     N <- length(flare_files); chr_sizes <- chr_sizes[1:N, ]; total_size <- sum(chr_sizes$size); chr_weights <- chr_sizes$size/total_size; \
     combine_chrs <- function(flare_files, chr_weights) { \
