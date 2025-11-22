@@ -68,11 +68,11 @@ task combine_flare {
         Array[File] flare_files
     }
 
+    command <<<
+
     for f in ~{sep=' ' flare_files}; do
         echo "$f" >> flare_files.txt
     done
-
-    command <<<
 
     Rscript -e "\
     library(tidyverse); \
