@@ -81,7 +81,7 @@ task combine_flare {
     chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
     # Read flare files \
     flare_files <- readLines('flare_files.txt'); \
-    df <- tibble(flare_files) %>% mutate(chr_num = as.integer(str_extract(flare_files, "(?<=/chr)\\d+")), chrom = paste0("chr", chr_num)) %>% inner_join(chr_sizes, by = c("chrom" = "chrom")) %>% arrange(chr_num); \
+    df <- tibble(flare_files) %>% mutate(chr_num = as.integer(str_extract(flare_files, '(?<=/chr)\\d+')), chrom = paste0('chr', chr_num)) %>% inner_join(chr_sizes, by = c('chrom' = 'chrom')) %>% arrange(chr_num); \
     flare_files <- df$flare_files; \
     N <- length(flare_files); \
     chr_weights <- df$size / sum(df$size); \
