@@ -124,7 +124,7 @@ task combine_flare {
       mutate(n=row_number()) %>%
       pivot_longer(-c(samples, n), names_to='Cluster', values_to='Value')
     K <- length(unique(flr_long[['Cluster']]))
-    colormap <- setNames(c(brewer.pal(8,'Dark2'), brewer.pal(8,'Set2'))[1:K],
+    colormap <- setNames(c(brewer.pal(8,'Set1'), brewer.pal(8,'Pastel1'))[1:K],
                          unique(flr_long[['Cluster']]))
     p <- ggplot(flr_long, aes(x=n, y=Value, fill=Cluster, color=Cluster)) +
       geom_bar(stat='identity') +
