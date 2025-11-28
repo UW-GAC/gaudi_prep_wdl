@@ -68,41 +68,78 @@ task combine_flare {
         Array[File] flare_files
     }
 
+    Int N = length(flare_files)
+
     command <<<
 
     for f in ~{sep=' ' flare_files}; do
         echo "$f" >> flare_files.txt
     done
 
-    Rscript -e "\
-    library(tidyverse); \
-    library(RColorBrewer); \
-    # Get chr sizes \
-    chr_sizes <- read_tsv('https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes', col_names=c('chrom','size')) %>% filter(chrom %in% paste0('chr',1:22)) %>% mutate(chr_num = as.integer(sub('chr','',chrom))) %>% arrange(chr_num); \
-    # Read flare files \
-    flare_files <- readLines('flare_files.txt'); \
-    df <- tibble(flare_file = flare_files) %>% mutate(base = basename(flare_file), chrom = str_extract(base, '^chr[0-9]+'),chr_num = as.integer(str_remove(chrom, 'chr'))) %>% inner_join(chr_sizes, by = c('chrom' = 'chrom')) %>% arrange(chr_num); \
-    flare_files <- df[['flare_file']]; \
-    N <- length(flare_files); \
-    chr_weights <- df[['size']] / sum(df[['size']]); \
-    # Combine chrs
-    combine_chrs <- function(flare_files, chr_weights) { \
-      tmp <- read_tsv(flare_files[1], show_col_types=FALSE); \
-      samples <- tmp[['SAMPLE']]; \
-      fracs <- tmp[ , setdiff(names(tmp), 'SAMPLE')] *chr_weights[1]; \
-      for (i in 2:length(flare_files)) { tmp <- read_tsv(flare_files[i], show_col_types=FALSE); fracs <- fracs + tmp[ , setdiff(names(tmp), 'SAMPLE')] *chr_weights[i]; } \
-      fracs <- fracs / rowSums(fracs); \
-      flr <- bind_cols(samples=samples, fracs); \
-      return(flr); \
-    }; \
-    flr <- combine_chrs(flare_files, chr_weights); \
-    write_tsv(flr, 'global_ancestry.tsv'); \
-    flr_long <- flr %>% mutate(n=row_number()) %>% pivot_longer(-c(samples, n), names_to='Cluster', values_to='Value'); \
-    K <- length(unique(flr_long[['Cluster']])); \
-    colormap <- setNames(c(brewer.pal(8,'Dark2'), brewer.pal(8,'Set2'))[1:K], unique(flr_long[['Cluster']])); \
-    p <- ggplot(flr_long, aes(x=n, y=Value, fill=Cluster, color=Cluster)) + geom_bar(stat='identity') + scale_fill_manual(values=colormap, breaks=rev(names(colormap))) + scale_color_manual(values=colormap, breaks=rev(names(colormap))) + theme_classic() + theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()); \
-    ggsave('global_ancestry.png', p, width=12, height=4); \
-    "
+    R << RSCRIPT
+    library(tidyverse)
+    library(RColorBrewer)
+
+    # get chromosome sizes
+    chr_sizes <- read_tsv(
+        'https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes',
+        col_names=c('chrom','size')) %>% 
+    filter(chrom %in% paste0('chr',1:22)) %>%
+    mutate(chr_num = as.integer(sub('chr','',chrom))) %>%
+    select(-chrom) %>%
+    arrange(chr_num)
+    chr_sizes <- chr_sizes[1:N, ]
+
+    # read flare files
+    flare_files <- readLines('flare_files.txt')
+
+    df <- tibble(flare_file = flare_files) %>%
+      mutate(
+        base = basename(flare_file),
+        chrom = str_extract(base, '^chr[0-9]+'),
+        chr_num = as.integer(str_remove(chrom, 'chr'))
+      ) %>%
+      inner_join(chr_sizes, by='chr_num') %>%
+      arrange(chr_num)
+    flare_files <- df[['flare_file']]
+    chr_weights <- df[['size']] / sum(df[['size']])
+
+    # combine chromosomes
+    combine_chrs <- function(flare_files, chr_weights) {
+        tmp <- read_tsv(flare_files[1], show_col_types=FALSE)
+        samples <- tmp[['SAMPLE']]
+        tmp_numeric <- as.matrix(tmp[, setdiff(names(tmp), "SAMPLE")])
+        fracs <- tmp_numeric * chr_weights[1]
+        for (i in 2:length(flare_files)) {
+            tmp <- read_tsv(flare_files[i], show_col_types=FALSE)
+            tmp_numeric <- as.matrix(tmp[, setdiff(names(tmp), "SAMPLE")])
+            fracs <- fracs + tmp_numeric * chr_weights[i]
+        }
+        fracs <- fracs / rowSums(fracs)
+        flr <- bind_cols(samples = samples, as_tibble(fracs))
+        return(flr)
+    }
+
+    flr <- combine_chrs(flare_files, chr_weights)
+    write_tsv(flr, 'global_ancestry.tsv')
+    # plotting
+    flr_long <- flr %>%
+      mutate(n=row_number()) %>%
+      pivot_longer(-c(samples, n), names_to='Cluster', values_to='Value')
+    K <- length(unique(flr_long[['Cluster']]))
+    colormap <- setNames(c(brewer.pal(8,'Dark2'), brewer.pal(8,'Set2'))[1:K],
+                         unique(flr_long[['Cluster']]))
+    p <- ggplot(flr_long, aes(x=n, y=Value, fill=Cluster, color=Cluster)) +
+      geom_bar(stat='identity') +
+      scale_fill_manual(values=colormap, breaks=rev(names(colormap))) +
+      scale_color_manual(values=colormap, breaks=rev(names(colormap))) +
+      theme_classic() +
+      theme(axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank())
+    ggsave('global_ancestry.png', p, width=12, height=4)
+    RSCRIPT
 
     >>>
 
