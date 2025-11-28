@@ -68,8 +68,6 @@ task combine_flare {
         Array[File] flare_files
     }
 
-    Int N = length(flare_files)
-
     command <<<
 
     for f in ~{sep=' ' flare_files}; do
@@ -88,7 +86,6 @@ task combine_flare {
     mutate(chr_num = as.integer(sub('chr','',chrom))) %>%
     select(-chrom) %>%
     arrange(chr_num)
-    chr_sizes <- chr_sizes[1:N, ]
 
     # read flare files
     flare_files <- readLines('flare_files.txt')
