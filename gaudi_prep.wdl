@@ -118,12 +118,18 @@ task combine_flare {
     }
 
     flr <- combine_chrs(flare_files, chr_weights)
+    
     write_tsv(flr, 'global_ancestry.tsv')
+
+    clusters <- setdiff(colnames(flr), "samples")
+    clusters <- clusters[order(clusters)] 
+    K <- length(clusters)
+
     # plotting
+    flr <- flr %>% arrange(!!sym(clusters[1]))
     flr_long <- flr %>%
       mutate(n=row_number()) %>%
       pivot_longer(-c(samples, n), names_to='Cluster', values_to='Value')
-    K <- length(unique(flr_long[['Cluster']]))
     colormap <- setNames(c(brewer.pal(8,'Set1'), brewer.pal(8,'Pastel1'))[1:K],
                          unique(flr_long[['Cluster']]))
     p <- ggplot(flr_long, aes(x=n, y=Value, fill=Cluster, color=Cluster)) +
@@ -131,10 +137,7 @@ task combine_flare {
       scale_fill_manual(values=colormap, breaks=rev(names(colormap))) +
       scale_color_manual(values=colormap, breaks=rev(names(colormap))) +
       theme_classic() +
-      theme(axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            axis.title.x=element_blank(),
-            axis.title.y=element_blank())
+      theme(axis.line=element_blank(), axis.ticks.x=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.ticks.y=element_blank(), axis.text.y=element_blank(), axis.title.y=element_blank(), panel.spacing=unit(0, 'in'))
     ggsave('global_ancestry.png', p, width=12, height=4)
     RSCRIPT
 
