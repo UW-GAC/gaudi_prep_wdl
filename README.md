@@ -10,9 +10,9 @@ Inputs:
 
 input | description
 --- | ---
-vcf_files | Array of VCF files to both convert to PLINK2 pgen format and use as target VCF files for FLARE
+vcf_files | VCF Array to both convert to PLINK2 pgen format and use as target VCF files for FLARE
 samples_keep | Optional file with IDs to keep in both VCF to PLINK and FLARE
-ref_file_list | Array of reference VCF files for FLARE
-out_prefix_list | FLARE input 
-genetic_map_file | FLARE input 
-reference_map_file | FLARE input 
+ref_file_list | VCF Array of reference VCF files for FLARE
+out_prefix_list | Required FLARE input, string array of output prefixes
+genetic_map_file | Required FLARE input file
+reference_map_file | Required FLARE input file
